@@ -42,12 +42,13 @@ import javafx.stage.StageStyle;
 
 public class CannotFindYourSizeWebView extends Application {
 	final static Logger logger = Logger.getLogger(CannotFindYourSizeWebView.class);
-	static ButtonType ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
-	static Alert alert;
+	
 
+	static 	Alert alert;
 	CantFindURL cannotfindurl2 = new CantFindURL();
 	static boolean runFl = true;
-	static boolean nir= true;
+	static boolean nir;
+	static ButtonType ok;
 	Button nextButton;
 	TextField barcodeTextfield;
 	public static String cannotfindurl;
@@ -248,6 +249,7 @@ public class CannotFindYourSizeWebView extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				// barcodeTextfield.requestFocus();
+				nir=false;
 				HomePage.closeOnScreenKeyBoard();
 				HomePage.openOnScreenKeyBoard();
 				resetLastInteractionTime();
@@ -258,6 +260,7 @@ public class CannotFindYourSizeWebView extends Application {
 
 			@Override
 			public void handle(TouchEvent event) {
+				nir=false;
 				HomePage.closeOnScreenKeyBoard();
 				HomePage.openOnScreenKeyBoard();
 				// barcodeTextfield.requestFocus();
@@ -286,6 +289,7 @@ public class CannotFindYourSizeWebView extends Application {
 		});
 
 		webView.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			
 
 			@Override
 			public void handle(KeyEvent event) {
@@ -369,7 +373,7 @@ public class CannotFindYourSizeWebView extends Application {
 
 	public void startUserInactivityDetectThread(int idleTime, Stage CFYSwebStage) {
 		resetLastInteractionTime();
-		nir=true;
+	
 
 		Service<Boolean> createFxService = new Service<Boolean>() {
 			@Override
@@ -421,7 +425,7 @@ public class CannotFindYourSizeWebView extends Application {
 			Boolean value = createFxService.getValue();
 			if (!value) {
 
-				startPopupInactivity(1, CFYSwebStage);
+			startPopupInactivity(1, CFYSwebStage);
 				root.setStyle("-fx-opacity: 0.5;");
 
 			displayErrorDialog("APPLICATION IS IDLE.",CFYSwebStage);
@@ -484,12 +488,12 @@ public class CannotFindYourSizeWebView extends Application {
 		createFxService.setOnSucceeded(w -> {
 			runFl = false;
 		
-				if ((!runFl)&&nir) {
+				if ((!runFl) && nir) {
 					java.net.CookieHandler.setDefault(new java.net.CookieManager());
 					HomePage homePage = new HomePage();
 					try {
 						homePage.start(CFYSwebStage);
-						 Button cancelButton = ( Button ) alert.getDialogPane().lookupButton( ok );
+						Button cancelButton = ( Button ) alert.getDialogPane().lookupButton( ok );
 			                cancelButton.fire();
 						
 					} catch (Exception e) {
@@ -526,8 +530,9 @@ public class CannotFindYourSizeWebView extends Application {
 		this.setLastInteractionTime(time);
 	}
 public void displayErrorDialog(String errorMsg, Stage CFYSwebStage) {
-		
-
+		nir=true;
+	ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+	
 	
 		alert = new Alert(AlertType.ERROR, "", ok);
 
@@ -556,11 +561,17 @@ public void displayErrorDialog(String errorMsg, Stage CFYSwebStage) {
 		alert.setY((bounds.getMaxY() / 2) - 100);
 
 		alert.showAndWait().ifPresent(rs -> {
-			if (rs == ButtonType.OK) {
+			if (rs == ok) {
+				System.out.println("faizal");
+				nir=false;
 				runFl=true;
 				resetLastInteractionTime();
-				nir=false;
+				Button cancelButton = ( Button ) alert.getDialogPane().lookupButton( ok );
+                cancelButton.fire();
+                cancelButton.fire();
+				
 				logger.info("OK Pressed.");
+				
 			}
 				
 			
