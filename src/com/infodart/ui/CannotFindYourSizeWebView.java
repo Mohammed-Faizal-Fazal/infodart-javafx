@@ -42,6 +42,7 @@ import javafx.stage.StageStyle;
 
 public class CannotFindYourSizeWebView extends Application {
 	final static Logger logger = Logger.getLogger(CannotFindYourSizeWebView.class);
+	static boolean mulAlert;
 	
 
 	static 	Alert alert;
@@ -269,11 +270,12 @@ public class CannotFindYourSizeWebView extends Application {
 			}
 		});
 
-		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+		/*webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
-			if (Worker.State.SUCCEEDED.equals(newValue)) {
+			if (Worker.State.SUCCEEDED!=newValue) {
 				barcodeTextfield.requestFocus();
 				HomePage.closeOnScreenKeyBoard();
+				mulAlert=true;
 
 				nir=false;
 				runFl=true;
@@ -286,7 +288,70 @@ public class CannotFindYourSizeWebView extends Application {
 			barcodeTextfield.requestFocus();
 			HomePage.closeOnScreenKeyBoard();
 
-		});
+		});*/
+		webView.getEngine().getLoadWorker().stateProperty().addListener(
+				  new ChangeListener<Worker.State>() {
+				  @Override
+				  public void changed(
+				    ObservableValue<? extends Worker.State> observable,
+				    Worker.State oldValue, Worker.State newValue ) {
+
+				    if( newValue != Worker.State.SUCCEEDED ) {
+				      return;
+				    }
+
+				    barcodeTextfield.requestFocus();
+					HomePage.closeOnScreenKeyBoard();
+					mulAlert=true;
+
+					nir=false;
+					runFl=true;
+					resetLastInteractionTime();
+				
+					startUserInactivityDetectThread(
+							Integer.parseInt(ApplicationProperties.properties.getProperty("APPLICATION_IDLE_TIME")), CFYSwebStage);
+
+				}
+			
+			
+				  }
+				 );
+	
+		/*webView.getEngine().getLoadWorker().stateProperty().addListener(
+				  new ChangeListener<Worker.State>() {
+				    @Override
+				    public void changed(
+				                ObservableValue<? extends Worker.State> observable,
+				                Worker.State oldValue, Worker.State newValue) {
+				      switch (newValue) {
+				        case SUCCEEDED:
+				        case FAILED:
+				        case CANCELLED:
+				          webView
+				            .getEngine()
+				            .getLoadWorker()
+				            .stateProperty()
+				            .removeListener(this);
+				      }
+
+
+				      if (newValue != Worker.State.SUCCEEDED) {
+				        return;
+				      }
+
+				      barcodeTextfield.requestFocus();
+						HomePage.closeOnScreenKeyBoard();
+						mulAlert=true;
+
+						nir=false;
+						runFl=true;
+						resetLastInteractionTime();
+					
+						startUserInactivityDetectThread(
+								Integer.parseInt(ApplicationProperties.properties.getProperty("APPLICATION_IDLE_TIME")), CFYSwebStage);
+
+				    }
+				  } );*/
 
 		webView.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			
@@ -372,6 +437,8 @@ public class CannotFindYourSizeWebView extends Application {
 	}
 
 	public void startUserInactivityDetectThread(int idleTime, Stage CFYSwebStage) {
+	
+			mulAlert=false;
 		resetLastInteractionTime();
 	
 
@@ -430,9 +497,12 @@ public class CannotFindYourSizeWebView extends Application {
 
 			displayErrorDialog("APPLICATION IS IDLE.",CFYSwebStage);
 				root.setStyle(null);
+				createFxService.cancel();
 
 	
 
+			}else {
+				createFxService.cancel();
 			}
 
 		});
@@ -499,6 +569,9 @@ public class CannotFindYourSizeWebView extends Application {
 					} catch (Exception e) {
 						logger.error(e);
 					}
+				}else {
+					createFxService.cancel();
+					
 				}
 			
 
@@ -532,6 +605,7 @@ public class CannotFindYourSizeWebView extends Application {
 public void displayErrorDialog(String errorMsg, Stage CFYSwebStage) {
 		nir=true;
 	ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+
 	
 	
 		alert = new Alert(AlertType.ERROR, "", ok);
@@ -562,13 +636,12 @@ public void displayErrorDialog(String errorMsg, Stage CFYSwebStage) {
 
 		alert.showAndWait().ifPresent(rs -> {
 			if (rs == ok) {
-				System.out.println("faizal");
+			
 				nir=false;
 				runFl=true;
 				resetLastInteractionTime();
-				Button cancelButton = ( Button ) alert.getDialogPane().lookupButton( ok );
-                cancelButton.fire();
-                cancelButton.fire();
+				
+                
 				
 				logger.info("OK Pressed.");
 				
