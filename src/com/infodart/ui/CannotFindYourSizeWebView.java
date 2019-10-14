@@ -67,8 +67,7 @@ public class CannotFindYourSizeWebView extends Application {
 		resetLastInteractionTime();
 		isIdle = false;
 
-		startUserInactivityDetectThread(
-				Integer.parseInt(ApplicationProperties.properties.getProperty("APPLICATION_IDLE_TIME")), CFYSwebStage);
+		
 
 		buildUI(CFYSwebStage);
 	}
@@ -260,10 +259,13 @@ public class CannotFindYourSizeWebView extends Application {
 		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
 			if (Worker.State.SUCCEEDED.equals(newValue)) {
-				barcodeTextfield.requestFocus();
-				HomePage.closeOnScreenKeyBoard();
+			
+				startUserInactivityDetectThread(
+						Integer.parseInt(ApplicationProperties.properties.getProperty("APPLICATION_IDLE_TIME")), CFYSwebStage);
 
 			}
+			barcodeTextfield.requestFocus();
+			HomePage.closeOnScreenKeyBoard();
 
 		});
 
@@ -408,15 +410,7 @@ public class CannotFindYourSizeWebView extends Application {
 				CommonUtil.displayErrorDialog("APPLICATION IS IDLE.");
 				root.setStyle(null);
 
-				if (!runFl) {
-					java.net.CookieHandler.setDefault(new java.net.CookieManager());
-					HomePage homePage = new HomePage();
-					try {
-						homePage.start(CFYSwebStage);
-					} catch (Exception e) {
-						logger.error(e);
-					}
-				}
+	
 
 			}
 
@@ -472,6 +466,15 @@ public class CannotFindYourSizeWebView extends Application {
 
 		createFxService.setOnSucceeded(w -> {
 			runFl = false;
+			if (!runFl) {
+				java.net.CookieHandler.setDefault(new java.net.CookieManager());
+				HomePage homePage = new HomePage();
+				try {
+					homePage.start(CFYSwebStage);
+				} catch (Exception e) {
+					logger.error(e);
+				}
+			}
 
 		});
 
