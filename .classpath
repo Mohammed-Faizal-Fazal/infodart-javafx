@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="config"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="lib/asm-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-analysis-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-commons-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-tree-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-util-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-xml-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-osgi-4.3.jar"/>
+	<classpathentry kind="lib" path="lib/rest-assured-common-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/xml-path-2.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.2.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/async-task-impl-6.10.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
+	<classpathentry kind="lib" path="lib/cxf-api-2.7.3.jar"/>
+	<classpathentry kind="lib" path="lib/cxf-rt-frontend-jaxws-2.7.3.jar"/>
+	<classpathentry kind="lib" path="lib/cxf-rt-frontend-simple-2.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/cxf-rt-transports-http-2.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/controlsfx-8.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-rt.jar"/>
+	<classpathentry kind="lib" path="lib/ksoap2-android-assembly-2.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/webservices-9.2.2.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javaFX"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

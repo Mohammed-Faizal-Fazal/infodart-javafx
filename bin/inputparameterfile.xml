@@ -1,0 +1,17 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="com.tcs.mobapps.webservice">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <com:sendKioskUrl>
+         <!--Optional:-->
+         <storeId>null</storeId>
+         <!--Optional:-->
+         <itemId>1000005115260</itemId>
+         <!--Optional:-->
+         <reqType>MSC</reqType>
+         <!--Optional:-->
+         <reqFrom>K1</reqFrom>
+         <!--Optional:-->
+         <entName>?</entName>
+      </com:sendKioskUrl>
+   </soapenv:Body>
+</soapenv:Envelope>
