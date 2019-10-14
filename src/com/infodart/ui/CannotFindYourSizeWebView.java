@@ -20,8 +20,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -29,15 +33,21 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class CannotFindYourSizeWebView extends Application {
 	final static Logger logger = Logger.getLogger(CannotFindYourSizeWebView.class);
+	static ButtonType ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+	static Alert alert;
 
 	CantFindURL cannotfindurl2 = new CantFindURL();
-	boolean runFl = true;
+	static boolean runFl = true;
+	static boolean nir= true;
 	Button nextButton;
 	TextField barcodeTextfield;
 	public static String cannotfindurl;
@@ -259,6 +269,12 @@ public class CannotFindYourSizeWebView extends Application {
 		webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
 
 			if (Worker.State.SUCCEEDED.equals(newValue)) {
+				barcodeTextfield.requestFocus();
+				HomePage.closeOnScreenKeyBoard();
+
+				nir=false;
+				runFl=true;
+				resetLastInteractionTime();
 			
 				startUserInactivityDetectThread(
 						Integer.parseInt(ApplicationProperties.properties.getProperty("APPLICATION_IDLE_TIME")), CFYSwebStage);
@@ -353,6 +369,7 @@ public class CannotFindYourSizeWebView extends Application {
 
 	public void startUserInactivityDetectThread(int idleTime, Stage CFYSwebStage) {
 		resetLastInteractionTime();
+		nir=true;
 
 		Service<Boolean> createFxService = new Service<Boolean>() {
 			@Override
@@ -407,7 +424,7 @@ public class CannotFindYourSizeWebView extends Application {
 				startPopupInactivity(1, CFYSwebStage);
 				root.setStyle("-fx-opacity: 0.5;");
 
-				CommonUtil.displayErrorDialog("APPLICATION IS IDLE.");
+			displayErrorDialog("APPLICATION IS IDLE.",CFYSwebStage);
 				root.setStyle(null);
 
 	
@@ -466,15 +483,22 @@ public class CannotFindYourSizeWebView extends Application {
 
 		createFxService.setOnSucceeded(w -> {
 			runFl = false;
-			if (!runFl) {
-				java.net.CookieHandler.setDefault(new java.net.CookieManager());
-				HomePage homePage = new HomePage();
-				try {
-					homePage.start(CFYSwebStage);
-				} catch (Exception e) {
-					logger.error(e);
+		
+				if ((!runFl)&&nir) {
+					java.net.CookieHandler.setDefault(new java.net.CookieManager());
+					HomePage homePage = new HomePage();
+					try {
+						homePage.start(CFYSwebStage);
+						 Button cancelButton = ( Button ) alert.getDialogPane().lookupButton( ok );
+			                cancelButton.fire();
+						
+					} catch (Exception e) {
+						logger.error(e);
+					}
 				}
-			}
+			
+
+		
 
 		});
 
@@ -501,4 +525,46 @@ public class CannotFindYourSizeWebView extends Application {
 		logger.info("Last Interaction Time : " + time);
 		this.setLastInteractionTime(time);
 	}
+public void displayErrorDialog(String errorMsg, Stage CFYSwebStage) {
+		
+
+	
+		alert = new Alert(AlertType.ERROR, "", ok);
+
+		alert.setHeaderText("");
+		alert.initStyle(StageStyle.UNDECORATED);
+		//alert.getDialogPane().setBackground(Background.EMPTY);
+
+		ImageView DIALOG_HEADER_ICON = new ImageView(ApplicationProperties.properties.getProperty("HOME_ERROR_IMAGE"));
+		DIALOG_HEADER_ICON.setFitHeight(78);
+		DIALOG_HEADER_ICON.setFitWidth(78);
+		alert.getDialogPane().setGraphic(DIALOG_HEADER_ICON);
+		//alert.setContentText("\n" + errorMsg);
+		
+		Text txt = new Text("\n" + errorMsg);
+		Font f = new Font(20);
+		txt.setFont(f);
+		
+		alert.getDialogPane().setContent(txt);
+		
+		alert.setResizable(true);
+		alert.getDialogPane().setPrefSize(400, 200);
+		
+		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+
+		alert.setX((bounds.getMaxX() / 2) - 200);
+		alert.setY((bounds.getMaxY() / 2) - 100);
+
+		alert.showAndWait().ifPresent(rs -> {
+			if (rs == ButtonType.OK) {
+				runFl=true;
+				resetLastInteractionTime();
+				nir=false;
+				logger.info("OK Pressed.");
+			}
+				
+			
+		});
+
+}
 }

@@ -1,5 +1,7 @@
 package com.infodart.ui;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 import com.infodart.constant.ApplicationProperties;
@@ -19,10 +21,31 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class CommonUtil {
-	
+	private Long lastInteractionTime;
 	final static Logger logger = Logger.getLogger(CommonUtil.class);
+	public long getLastInteractionTime() {
+
+		Date d = new Date();
+		Long time = d.getTime();
+
+		return (time - lastInteractionTime);
+	}
+
+	public void setLastInteractionTime(Long lastInteractionTime) {
+		this.lastInteractionTime = lastInteractionTime;
+	}
+
+	public void resetLastInteractionTime() {
+
+		Date d = new Date();
+		Long time = d.getTime();
+		logger.info("Last Interaction Time : " + time);
+		this.setLastInteractionTime(time);
+	}
 
 	public static void displayErrorDialog(String errorMsg) {
+		
+	
 		ButtonType ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
 
 		Alert alert = new Alert(AlertType.ERROR, "", ok);
@@ -57,7 +80,7 @@ public class CommonUtil {
 			}
 		});
 	}
-	
+
 	public static void displayHomeErrorDialog(Stage CFYSwebStage, TextField barcodeTextfield) {
 		ButtonType contShop = new ButtonType("CONTINUE SHOPPING", ButtonBar.ButtonData.CANCEL_CLOSE);
 		ButtonType home = new ButtonType("GO TO HOME PAGE", ButtonBar.ButtonData.OK_DONE);
